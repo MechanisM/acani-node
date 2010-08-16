@@ -1,3 +1,9 @@
 [submodule "lib/ws"]
 	path = lib/ws
 	url = http://github.com/miksago/node-websocket-server.git
+[submodule "lib/redis-node-client"]
+	path = lib/redis-node-client
+	url = http://github.com/fictorial/redis-node-client.git
+[submodule "lib/node_hash"]
+	path = lib/node_hash
+	url = http://github.com/Marak/node_hash.git
