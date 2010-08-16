@@ -1,24 +1,22 @@
 <html>
 <head>
-  <script>
-  var conn;
-  var connect = function() {
-    if (window["WebSocket"]) {
-      conn = new WebSocket("ws://localhost:8124");
-      conn.onmessage = function(evt) {
-        data = JSON.parse(evt.data);
-        if(data['action'] == 'close'){
-          $('#mouse_'+data['id']).remove();
-        } else if(data['action'] == 'move'){
-          move(data);
-        };
-      };
-    }
-  };
-
-  window.onload = connect;
-  </script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-<script src="http://jeffkreeftmeijer.com/js/socket/socket.io.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+<script type="text/javascript">
+var conn;
+var connect = function() {
+  if (window["WebSocket"]) {
+    conn = new WebSocket("ws://localhost:8124");
+    conn.onmessage = function (evt) {
+      console.log("YAY!");
+    };
+  }
+};
+$(document).ready(function () {
+  connect();
+});
+</script>
 </head>
+<body>
+  <h1>hello</h1>
+</body>
 </html>
