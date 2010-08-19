@@ -18,5 +18,10 @@ $(document).ready(function () {
 </head>
 <body>
   <h1>hello</h1>
+  <p>Open up console and type run:</p>
+  <pre>
+    conn.send(JSON.stringify({"uid":"bob"})); // login
+    conn.send(JSON.stringify({"content":"Hello world!","to_uid_public":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e"})); // send msg to Matt's iPhone    
+  </pre>
 </body>
 </html>

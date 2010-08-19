@@ -12,7 +12,7 @@ server.addListener("connection", function (conn) {
 
   fSubscribe = function (channel) {
     client_sub.subscribeTo(channel, function (published_channel, published_message, subscription_pattern) {
-      console.log("UID: " + uid + " IN CHANNEL: " + published_channel + " RECEIVED MESSAGE: " + published_message);
+      console.log("UID: " + uid + " IN CHANNEL: " + published_channel + " WITH PATTERN: " + subscription_pattern + " PUBLISHED MESSAGE: " + published_message);
       conn.broadcast(JSON.stringify({'channel': published_channel, 'content': published_message}));
     });
   }
@@ -70,6 +70,8 @@ server.addListener("connection", function (conn) {
       // LEAVE ROOM
       client_pub.srem(uid + "_rooms", message.leave_room);
       client_sub.unsubscribeFrom(message.leave_room)
+    } else {
+      console.log("MESSAGE NOT PROCESSED: " + JSON.stringify(message));
     }
   });
 });
