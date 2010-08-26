@@ -1,6 +1,5 @@
 <html>
 <head>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
 <script type="text/javascript">
 var conn;
 var connect = function() {
@@ -11,9 +10,11 @@ var connect = function() {
     };
   }
 };
-$(document).ready(function () {
+window.onload = function() {
   connect();
-});
+  // conn.send(JSON.stringify({"uid":"bob"})); // login
+  // conn.send(JSON.stringify({"content":"Hello world!","to_uid_public":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e"})); // send msg to Matt's iPhone
+};
 </script>
 </head>
 <body>

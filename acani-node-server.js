@@ -19,8 +19,9 @@ server.addListener("connection", function (conn) {
 
   // Callback for incoming messages from client's websocket connection.
   conn.addListener("message", function (message) {
+    console.log("MESSAGE: " + message);
     // Receive JSON from websocket client.
-    message = JSON.parse(message);
+    message = JSON.parse(message); // escape special chars first; rescue and return error
     if (!uid && message.uid) {
       console.log("CONNECTING: " + message.uid);
       // CONNECT: the first message after a websocket connection should contain {uid: some-uid}.
