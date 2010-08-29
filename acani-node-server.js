@@ -13,20 +13,15 @@ server.addListener("connection", function (conn) {
   fSubscribe = function (channel) {
     client_sub.subscribeTo(channel, function (published_channel, published_message, subscription_pattern) {
       console.log("UID: " + uid + " IN CHANNEL: " + published_channel + " WITH PATTERN: " + subscription_pattern + " PUBLISHED MESSAGE: " + published_message);
-      var string_msg = '{"timestamp":' + (new Date()).getTime() + ',"sender":"bob","channel":"' + published_channel + '","text":"' + published_message + '"}';
-      // var stringified_msg = JSON.stringify({"sender": "bob", "channel": published_channel, "text": published_message});
-      // console.log("MESSAGE STRINGIFIED: " + stringified_msg);
-      conn.broadcast(encodeURI(string_msg));
+      conn.broadcast(published_message);
     });
   }
 
   // Callback for incoming messages from client's websocket connection.
   conn.addListener("message", function (message) {
     console.log("MESSAGE: " + message);
-    message = decodeURI(message);
-    console.log("MESSAGE DECODED: " + message);
     // Receive JSON from websocket client.
-    message = JSON.parse(message); // escape special chars first; rescue and return error
+    message = JSON.parse(message); // rescue and return error
     if (!uid && message.uid) {
       console.log("CONNECTING: " + message.uid);
       // CONNECT: the first message after a websocket connection should contain {uid: some-uid}.
@@ -60,14 +55,12 @@ server.addListener("connection", function (conn) {
       });
     } else if (uid && message.text && message.to_uid_public) {
       console.log("SENDING FROM: " + uid + " TO PUBLIC: " + message.to_uid_public + ": " + message.text);
-      // message.text = message.text.replace(/\\"/g, "\"");
-      // console.log("MESSAGE ESCAPED: " + message.text);
       // SEND TO USER
-      client_pub.publish([message.to_uid_public, uid_public].sort().join("_"), message.text);
+      client_pub.publish([message.to_uid_public, uid_public].sort().join("_"), JSON.stringify(message));
     } else if (uid && message.text && message.to_room) {
       console.log("SENDING FROM: " + uid + " TO ROOM: " + message.to_room + ": " + message.text);
       // SEND TO ROOM
-      client_pub.publish(message.to_room, message.text);
+      client_pub.publish(message.to_room, JSON.stringify(message));
     } else if (uid && message.join_room) {
       console.log("UID: " + uid + " JOINING ROOM: " + message.join_room);
       // JOIN ROOM

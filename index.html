@@ -12,8 +12,6 @@ var connect = function() {
 };
 window.onload = function() {
   connect();
-  // conn.send(JSON.stringify({"uid":"bob"})); // login
-  // conn.send(JSON.stringify({"text":"Hello world!","to_uid_public":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e"})); // send msg to Matt's iPhone
 };
 </script>
 </head>
@@ -22,7 +20,16 @@ window.onload = function() {
   <p>Open up console and run:</p>
   <pre>
     conn.send(JSON.stringify({"uid":"bob"})); // login
-    conn.send(JSON.stringify({"text":"Hello world!","to_uid_public":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e"})); // send msg to Matt's iPhone. (Get the appropriate value for to_uid_public from the stdout of the node server after running the iPhone app.)
+    
+    // send msg to Matt's iPhone. (Get the appropriate value for to_uid_public
+    // from the stdout of the node server after running the iPhone app.)
+    conn.send(JSON.stringify({
+      "timestamp":~~(Date.now()/1000), // time in seconds since meridian
+      "channel":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e_81b637d8fcd2c6da6359e6963113a1170de795e4b725b84d1e0b4cfd9ec58ce9",
+      "sender":"bob_public_id",
+      "text":"Hello World!",
+      "to_uid_public":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e"
+    }));
   </pre>
 </body>
 </html>
