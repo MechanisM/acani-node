@@ -1,35 +1,45 @@
 <html>
-<head>
-<script type="text/javascript">
-var conn;
-var connect = function() {
-  if (window["WebSocket"]) {
-    conn = new WebSocket("ws://localhost:8124");
-    conn.onmessage = function (evt) {
-      console.log("YAY!");
+  <head>
+    <script src="jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var conn, connect;
+    connect = function() {
+      if (window["WebSocket"]) {
+        conn = new WebSocket("ws://localhost:8124");
+        conn.onmessage = function (message) {
+          if (message.data.error) {
+            console.log(message.data.error);
+          } else {
+            // ...
+          }
+        };
+      }
     };
-  }
-};
-window.onload = function() {
-  connect();
-};
-</script>
-</head>
-<body>
-  <h1>hello</h1>
-  <p>Open up console and run:</p>
-  <pre>
-    conn.send(JSON.stringify({"uid":"bob"})); // login
+    $(document).ready(function () {
+      connect();
+      $("input#login").click(function () {
+        conn.send(JSON.stringify({"uid": $("input#uid").val()}));
+      });
+    });
+    </script>
+  </head>
+  <body>
+    <input id="uid" type="text"/><input id="login" type="button" value="login"/>
+  
+    <h1>hello</h1>
+    <p>Open up console and run:</p>
+    <pre>
+      conn.send(JSON.stringify({"uid":"bob"})); // login
     
-    // send msg to Matt's iPhone. (Get the appropriate value for to_uid_public
-    // from the stdout of the node server after running the iPhone app.)
-    conn.send(JSON.stringify({
-      "timestamp":~~(Date.now()/1000), // time in seconds since meridian
-      "channel":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e_81b637d8fcd2c6da6359e6963113a1170de795e4b725b84d1e0b4cfd9ec58ce9",
-      "sender":"bob_public_id",
-      "text":"Hello World!",
-      "to_uid_public":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e"
-    }));
-  </pre>
-</body>
+      // send msg to Matt's iPhone. (Get the appropriate value for to_uid_public
+      // from the stdout of the node server after running the iPhone app.)
+      conn.send(JSON.stringify({
+        "timestamp":~~(Date.now()/1000), // time in seconds since meridian
+        "channel":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e_81b637d8fcd2c6da6359e6963113a1170de795e4b725b84d1e0b4cfd9ec58ce9",
+        "sender":"bob_public_id",
+        "text":"Hello World!",
+        "to_uid_public":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e"
+      }));
+    </pre>
+  </body>
 </html>
