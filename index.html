@@ -6,11 +6,12 @@
     connect = function() {
       if (window["WebSocket"]) {
         conn = new WebSocket("ws://localhost:8124");
-        conn.onmessage = function (message) {
-          if (message.data.error) {
-            console.log(message.data.error);
+        conn.onmessage = function (evt) {
+          var message = JSON.parse(evt.data);
+          if (message['error']) {
+            console.log(message['error']);
           } else {
-            // ...
+            console.log(message['text']);
           }
         };
       }
@@ -20,12 +21,15 @@
       $("input#login").click(function () {
         conn.send(JSON.stringify({"uid": $("input#uid").val()}));
       });
+      $("input#logout").click(function () {
+        conn.send('{"logout": "logout"}');
+      });
     });
     </script>
   </head>
   <body>
     <input id="uid" type="text"/><input id="login" type="button" value="login"/>
-  
+    <input id="logout" type="button" value="logout"/>
     <h1>hello</h1>
     <p>Open up console and run:</p>
     <pre>
