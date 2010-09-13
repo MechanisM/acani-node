@@ -11,7 +11,7 @@ server = ws.createServer();
 server.addListener("connection", function (conn) {
   console.log("CONNECTED");
 
-  var uid, redis_sub, redis_all, fSubscribe, logout;
+  var uid, redis_sub, redis_all, fSubscribe;
 
   fSubscribe = function (channel) {
     redis_sub.subscribeTo(channel, function (published_channel, published_message, subscription_pattern) {
