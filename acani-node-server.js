@@ -31,6 +31,8 @@ server.addListener("connection", function (conn) {
       message.uid = message.uid.trim();
       if (message.uid === '') {
         conn.write('{"error": "User ID must not be blank."}');
+      } else if (!message.uid.match(/^[a-zA-Z0-9]+$/)) {
+        conn.write('{"error": "User ID must be alphanumeric."}');
       } else if (!uid) { // not yet logged in
         redis_all = rc.createClient(redis_port);
         redis_all.sismember('online', message.uid, function (err, is_online) {
@@ -58,7 +60,19 @@ server.addListener("connection", function (conn) {
                   redis_all: redis_all,
                   uid: uid
                 };
-                conn.write(JSON.stringify({"error": 'You\'re now logged in as: ' + uid}));
+                conn.write(JSON.stringify({
+                  "success": 'You\'re now logged in as: ' + uid,
+                  "login": true
+                }));
+
+                // Get online users & write to client
+                redis_all.smembers('online', function (err, online_users) {
+                  if (err) {
+                    conn.write(JSON.stringify({"error": 'Error getting online users! ' + err}));
+                  } else if (online_users) {
+                    conn.write('{"online-users":["' + online_users.join('","') + '"]}');
+                  }
+                });
 
                 fSubscribe("*" + uid + "*"); // subscribe to all user's 1-on-1 rooms
 
@@ -86,7 +100,10 @@ server.addListener("connection", function (conn) {
     } else if (message.logout) { // trying to logout
       var acani = conn.acani;
       if (acani) {
-        conn.write(JSON.stringify({"error": uid + ' has logged out.'}));
+        conn.write(JSON.stringify({
+          "success": uid + ' has logged out.',
+          "logout": true
+        }));
 
         // Close redis connections.
         if (acani.redis_sub) {
