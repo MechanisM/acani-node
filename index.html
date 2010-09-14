@@ -14,20 +14,22 @@
       conn = new WebSocket("ws://localhost:8124");
       conn.onmessage = function (evt) {
         var message = JSON.parse(evt.data);
+        if (message['online-users'] &&
+              message['online-users'].constructor.toString().indexOf('Array') != -1) {
+          $("#online-users > h3 > span").text(message['online-users'].length);
+          $("#online-users > ul").html('<li>'+message['online-users'].join('</li><li>')+'</li>');
+        } else {
+          console.log(message['text']);
+        }
         if (message['error']) {
           $("p#feedback").attr("class", "error").text(message['error']);
-        } if (message['success']) {
+        } else if (message['success']) {
           $("p#feedback").attr("class", "success").text(message['success']);
           if (message['login']) {
             $("#online-users").show();
           } else if (message['logout']) {
             $("#online-users").hide();
           }
-        } if (message['online-users'] &&
-              message['online-users'].constructor.toString().indexOf('Array') != -1) {
-          $("#online-users > ul").html('<li>'+message['online-users'].join('</li><li>')+'</li>');
-        } else {
-          console.log(message['text']);
         }
       };
     }
@@ -50,11 +52,12 @@
 <body>
   <h1>acani</h1>
   <h2>Meet people nearby with similar interests</h2>
+  <p><em>Note</em>: if you close or refresh the browser, that logs you off.</p>
   <p id="feedback">Please Login Below</p>
   <input id="uid" type="text"/><input id="login" type="button" value="login"/>
   <input id="logout" type="button" value="logout"/>
   <div id="online-users">
-    <h3>Online Users</h3>
+    <h3>Online Users (<span>0</span>)</h3>
     <ul></ul>
   </div>
 
