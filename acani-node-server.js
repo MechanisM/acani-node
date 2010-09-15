@@ -1,7 +1,7 @@
-var sys, hash, ws, rc, server, redis_port, chat_port;
+var sys, hash, ws, rc, server, redis_port, node_port;
 
 redis_port = 6391;
-chat_port = 8124;
+node_port = 8124;
 sys = require('sys');
 hash = require(__dirname + '/lib/node_hash/lib/hash');
 ws = require(__dirname + '/lib/ws/lib/ws');
@@ -146,5 +146,5 @@ server.addListener("close", function (conn) {
   }
 });
 
-server.listen(chat_port);
-console.log('Server running at http://127.0.0.1:' + chat_port + '/');
+server.listen(node_port);
+console.log('Server running at http://127.0.0.1:' + node_port + '/');
