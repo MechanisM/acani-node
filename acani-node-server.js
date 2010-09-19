@@ -30,17 +30,17 @@ server.addListener("connection", function (conn) {
     if (message.uid !== undefined) { // trying to login
       message.uid = message.uid.trim();
       if (message.uid === '') {
-        conn.write('{"error": "User ID must not be blank."}');
+        conn.write('{"type": "login", "status": "error", "text": "User ID must not be blank."}');
       } else if (!message.uid.match(/^[a-zA-Z0-9]+$/)) {
-        conn.write('{"error": "User ID must be alphanumeric."}');
+        conn.write('{"type": "login", "status": "error", "text": "User ID must be alphanumeric."}');
       } else if (!uid) { // not yet logged in
         redis_all = rc.createClient(redis_port);
         redis_all.sismember('online', message.uid, function (err, is_online) {
           if (err) {
-            conn.write(JSON.stringify({"error": 'Error determining if ' + message.uid + ' is online! ' + err}));
+            conn.write(JSON.stringify({"type": "login", "status": "error", "text": 'Error determining if ' + message.uid + ' is online! ' + err}));
           } else if (is_online) {
             console.log("USER ID ALREADY TAKEN");
-            conn.write(JSON.stringify({"error": "Sorry, that user ID is already in use."}));
+            conn.write(JSON.stringify({"type": "login", "status": "error", "text": "Sorry, that user ID is already in use."}));
           } else {
             // CONNECT:
             // the first message after a websocket connection should contain {uid: some-uid}.
@@ -53,7 +53,7 @@ server.addListener("connection", function (conn) {
             // "Login" user and add to current list of online users.
             redis_all.sadd("online", uid, function (err, is_online) {
               if (err) {
-                conn.write(JSON.stringify({"error": 'Error logging in! ' + err}));
+                conn.write(JSON.stringify({"type": "login", "status": "error", "text": 'Error adding you to the list of online users! ' + err}));
               } else if (is_online) { // pass variables to connection for closing later
                 conn.acani = {
                   redis_sub: redis_sub,
@@ -61,14 +61,13 @@ server.addListener("connection", function (conn) {
                   uid: uid
                 };
                 conn.write(JSON.stringify({
-                  "success": 'You\'re now logged in as: ' + uid,
-                  "login": true
+                  "type": "login", "status": "success", "text": 'You\'re now logged in as: ' + uid
                 }));
 
                 // Get online users & write to client
                 redis_all.smembers('online', function (err, online_users) {
                   if (err) {
-                    conn.write(JSON.stringify({"error": 'Error getting online users! ' + err}));
+                    conn.write(JSON.stringify({"type": "login", "status": "error", "text": 'Error getting online users! ' + err}));
                   } else if (online_users) {
                     conn.write('{"online-users":["' + online_users.join('","') + '"]}');
                   }
@@ -79,7 +78,7 @@ server.addListener("connection", function (conn) {
                 // Subscribe to all user's other rooms.
                 redis_all.smembers(uid + "_rooms", function (err, members) {
                   if (err) {
-                    conn.write(JSON.stringify({"error": 'Error subscribing to rooms! ' + err}));
+                    conn.write(JSON.stringify({"type": "login", "status": "error", "text": 'Error subscribing to rooms! ' + err}));
                   } else if (members) {
                     rc.convertMultiBulkBuffersToUTF8Strings(members);
                     var i;
@@ -90,19 +89,18 @@ server.addListener("connection", function (conn) {
                   }
                 });
               }
-            });            
+            });
           }
         });
       } else {
         console.log("ALREADY LOGGED IN AS: " + uid);
-        conn.write(JSON.stringify({"error": 'You\'re already logged in as: ' + uid}));
+        conn.write(JSON.stringify({"type": "login", "status": "error", "text": 'You\'re already logged in as: ' + uid}));
       }
     } else if (message.logout) { // trying to logout
       var acani = conn.acani;
       if (acani) {
         conn.write(JSON.stringify({
-          "success": uid + ' has logged out.',
-          "logout": true
+          "type": "logout", "status": "success", "text": uid + ' has logged out.'
         }));
 
         // Close redis connections.
@@ -119,7 +117,7 @@ server.addListener("connection", function (conn) {
         uid = undefined; // logout user
       } else {
         console.log("NOT LOGGED IN");
-        conn.write(JSON.stringify({"error": "You're not logged in."}));
+        conn.write(JSON.stringify({"type": "login", "status": "error", "text": "You're not logged in."}));
       }
     } else { // default
       console.log("MESSAGE NOT PROCESSED: " + JSON.stringify(message));

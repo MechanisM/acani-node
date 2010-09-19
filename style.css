@@ -1,0 +1,5 @@
+p#feedback { background-color:yellow; }
+p#feedback.success { background-color:green; }
+p#feedback.error { background-color:red; }
+#logout, #online-users { display:none; }
+#online-users > ul > li { cursor:pointer; }
