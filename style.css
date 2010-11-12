@@ -1,5 +1,34 @@
-p#feedback { background-color:yellow; }
+header, section, article, footer {
+  display: block;
+}
+
+#feedback ul {
+  border: 1px solid;
+  padding: 5px;
+}
+
+#feedback .notice {
+  background-color: #FFF9D7;
+  border-color: #E2C822;
+}
+
+#feedback .success {
+  background-color: #A4E7A0;
+  border-color: #26722D;
+}
+
+#feedback .error {
+  background-color: #F0A8A8;
+  border-color: #900;
+}
+
+#feedback li {
+  list-style-type: none;
+  padding: 0;
+}
+
+/*p#feedback { background-color:yellow; }
 p#feedback.success { background-color:green; }
-p#feedback.error { background-color:red; }
+p#feedback.error { background-color:red; }*/
 #logout, #online-users { display:none; }
 #online-users > ul > li { cursor:pointer; }

@@ -10,14 +10,18 @@
   <h1>acani</h1>
   <h2>Meet people nearby with similar interests</h2>
   <p><em>Note</em>: if you close or refresh the browser, that logs you off.</p>
-  <p id="feedback">Please Login Below</p>
+  <section id="feedback">
+    <ul class="notice">
+      <li>Please Login Below</li>
+    </ul>
+  </section>
 
   <div id="login">
     <fb:login-button></fb:login-button> or
-    <input type="text"/><input type="button" value="login"/>
+    <input type="text"/><input type="button" value="login" />
   </div>
 
-  <input id="logout" type="button" value="logout"/>
+  <input id="logout" type="button" value="logout" />
   <div id="online-users">
     <h3>Online Users (<span>0</span>)</h3>
     <ul></ul>
@@ -25,16 +29,17 @@
 
   <p>To send messages to the iPhone, open up console and run:</p>
   <pre>
-    conn.send(JSON.stringify({"uid":"bob"})); // login
+    conn.send(JSON.stringify({"uid":"myid"})); // login
 
     // send msg to Matt's iPhone. (Get the appropriate value for to_uid_public
     // from the stdout of the node server after running the iPhone app.)
     conn.send(JSON.stringify({
+      "type":"txt",
       "timestamp":~~(Date.now()/1000), // time in seconds since meridian
-      "channel":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e_81b637d8fcd2c6da6359e6963113a1170de795e4b725b84d1e0b4cfd9ec58ce9",
-      "sender":"bob_public_id",
+      "channel":"myid_4c9c179714672857ed00001f",
+      "sender":"myid",
       "text":"Hello World!",
-      "to_uid_public":"35b653edcd8ea8c7c6a5245a69073f34e5fc432900a195f91578676c8fb6519e"
+      "to_uid":"4c9c179714672857ed00001f"
     }));
   </pre>
 

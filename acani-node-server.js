@@ -119,6 +119,9 @@ server.addListener("connection", function (conn) {
         console.log("NOT LOGGED IN");
         conn.write(JSON.stringify({"type": "login", "status": "error", "text": "You're not logged in."}));
       }
+    } else if (message.type === "txt") { // send txt message to user
+      console.log("SENDING FROM: " + uid + " TO PUBLIC: " + message.to_uid + ": " + message.text);
+      redis_all.publish(message.channel, JSON.stringify(message));
     } else { // default
       console.log("MESSAGE NOT PROCESSED: " + JSON.stringify(message));
     }

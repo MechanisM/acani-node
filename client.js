@@ -1,31 +1,34 @@
+function flashNotice(message) {
+  flashFeedback("notice", message);
+}
 var conn, online_users;
 
 function connect() {
-  if (window['WebSocket']) {
-    conn = new WebSocket('ws://localhost:8124');
+  if (window["WebSocket"]) {
+    conn = new WebSocket("ws://localhost:8124");
 
     conn.onmessage = function (evt) {
       var message = JSON.parse(evt.data);
 
       // Dispatch new messages to their appropriate handlers.
       switch (message.type) {
-        case 'login':
+        case "login":
           handleLogin(message.status, message.text);
           break;
 
-        case 'logout':
+        case "logout":
           handleLogout(message.status, message.text);
           break;
 
-        case 'join':
+        case "join":
           userJoin(message.username, message.timestamp);
           break;
 
-        case 'part':
+        case "part":
           userPart(message.username, message.timestamp);
           break;
 
-        case 'msg':
+        case "msg":
           addMessage(message.username, message.text, message.timestamp);
           break;
       }
@@ -74,9 +77,9 @@ function addMessage (from, text, time, _class) {
   // replace URLs with links
   text = text.replace(util.urlRE, '<a target="_blank" href="$&">$&</a>');
 
-  var content = '  <td>' + util.timeString(time) + '</td>'
-              + '  <td>' + util.toStaticHTML(from) + '</td>'
-              + '  <td>' + text  + '</td>';
+  var content = "  <td>" + util.timeString(time) + "</td>"
+              + "  <td>" + util.toStaticHTML(from) + "</td>"
+              + "  <td>" + text  + "</td>";
   messageElement.html(content);
 
   //the log is the stream that we view
@@ -88,20 +91,20 @@ function addMessage (from, text, time, _class) {
 
 // Update the list of users to show all online users (and count).
 function updateUsers() {
-  if (message['online-users'] &&
-        message['online-users'].constructor.toString().indexOf('Array') != -1) {
-    $('#online-users > h3 > span').text(message['online-users'].length);
-    $('#online-users > ul').html('<li>'+message['online-users'].join('</li><li>')+'</li>');
+  if (message["online-users"] &&
+        message["online-users"].constructor.toString().indexOf("Array") != -1) {
+    $("#online-users > h3 > span").text(message["online-users"].length);
+    $("#online-users > ul").html("<li>"+message["online-users"].join("</li><li>")+"</li>");
   }
 
-  var t = online_users.length.toString() + ' user';
-  if (online_users.length != 1) t += 's';
-  $('#usersLink').text(t);
+  var t = online_users.length.toString() + " user";
+  if (online_users.length != 1) t += "s";
+  $("#usersLink").text(t);
 }
 
 // Handle another user joining chat.
 function userJoin(username, timestamp) {
-  addMessage(username, 'joined', timestamp, 'join'); // put it in the stream
+  addMessage(username, "joined", timestamp, "join"); // put it in the stream
   // If we already know about this user, ignore it.
   for (var i = 0; i < online_users.length; i++) {
     if (online_users[i] == username) return;
@@ -112,7 +115,7 @@ function userJoin(username, timestamp) {
 
 // Handle a user leaving.
 function userPart(username, timestamp) {
-  addMessage(username, 'left', timestamp, 'part'); // put it in the stream
+  addMessage(username, "left", timestamp, "part"); // put it in the stream
   // Remove the user from the list.
   for (var i = 0; i < online_users.length; i++) {
     if (online_users[i] == username) {
@@ -123,44 +126,45 @@ function userPart(username, timestamp) {
   updateUsers(); // update the UI
 }
 
-function flashSuccess(message) {
-  flashFeedback('success', message);
+function flashNotice(message) {
+  flashFeedback("notice", message);
 }
 
-function flashNotice(message) {
-  flashFeedback('notice', message);
+function flashSuccess(message) {
+  flashFeedback("success", message);
 }
 
 function flashError(message) {
-  flashFeedback('error', message);
+  flashFeedback("error", message);
 }
 
 function handleLogin(status, message) {
-  if (status === 'success') {
+  if (status === "success") {
     // updateUsers();
-    $('#online-users').show();
-    $('#logout').show();
-    $('#login').hide();
+    $("#online-users").show();
+    $("#logout").show();
+    $("#login").hide();
   }
   flashFeedback(status, message)
 }
 
 function handleLogout(status, message) {
-  if (status === 'success') {
-    $('#online-users').hide();
-    $('#login').show();
-    $('#logout').hide();
+  if (status === "success") {
+    $("#online-users").hide();
+    $("#login").show();
+    $("#logout").hide();
   }
   flashFeedback(status, message)
 }
 
+// TODO: Provide support for multiple feedback messages.
 function flashFeedback(status, message) {
-  $('p#feedback').attr('class', status).text(message);
+  $("#feedback > ul").attr("class", status).children("li").text(message);
 }
 
 function openChatWithUser(username) {
   // Open box for direct messaging like gmail does
-  alert('open a new chat with user ' + username);
+  alert("open a new chat with user " + username);
 }
 
 $(document).ready(function () {
@@ -169,44 +173,46 @@ $(document).ready(function () {
 
   // Add newline to message if the user holds shift & hits enter.
   var shift_is_down = false;
-  $('#entry').keydown(function (e) {
+  $("#entry").keydown(function (e) {
     if (e.keyCode == 16) shift_is_down = true;
   });
-  $('#entry').keyup(function (e) {
+  $("#entry").keyup(function (e) {
     if (e.keyCode == 16) shift_is_down = false;
   });
 
   // Submit new messages when the user hits enter if the message isnt blank.
-  $('#entry').keypress(function (e) {
+  $("#entry").keypress(function (e) {
     if (e.keyCode != 13 /* Return */) return;
-    var text = $('#entry').attr('value');
+    var text = $("#entry").attr("value");
     if (shift_is_down) {
-      $('#entry').attr('value', text+"\n");
+      $("#entry").attr("value", text + "\n");
     } else {
       var msg = text.trim();
       if (msg) send(msg);
-      $('#entry').attr('value', ''); // clear the entry field.
+      $("#entry").attr("value", ""); // clear the entry field.
     }
   });
 
   // Username validation like http://www.facebook.com/username/
-  $('#login :button').click(function () {
-    var username = $('#login input:first').val().trim().replace('.', '');
+  $("#login :button").click(function () {
+    var username = $("#login input:first").val().trim().replace(".", "");
 
     if (username.length < 2) {
-      flashError('Usernames must be at least 2 characters long.');
+      flashError("Usernames must be at least 2 characters long.");
     } else if (username.match(/[^A-Za-z0-9]/)) {
-      flashError('Usernames must only contain A-Z, a-z, 0-9, and periods (.).');
-    } else {
-      conn.send(JSON.stringify({'uid': username}));
+      flashError("Usernames must only contain A-Z, a-z, 0-9, and periods (.).");
+    } else try {
+      conn.send(JSON.stringify({"uid": username}));
+    } catch (e) {
+      flashError("Error connecting - " + e.name + ": " + e.message);
     }
   });
 
-  $('#logout').click(function () {
+  $("#logout").click(function () {
     conn.send('{"logout": "logout"}');
   });
 
-  $('#online-users > ul > li').click(function () {
+  $("#online-users > ul > li").click(function () {
     openChatWithUser($(this).text());
   });
 });
